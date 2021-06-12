@@ -19,15 +19,9 @@ func Authz() gin.HandlerFunc {
 			return
 		}
 
-		extractedToken := strings.Split(clientToken, "Bearer ")
+		extractedToken := clientToken
 
-		if len(extractedToken) == 1 {
-			clientToken = strings.TrimSpace(extractedToken[0])
-		} else {
-			c.JSON(400, "Incorrect Format of Authorization Token")
-			c.Abort()
-			return
-		}
+		clientToken = strings.TrimSpace(extractedToken)
 
 		jwtWrapper := auth.JwtWrapper{
 			SecretKey: "verysecretkey",
