@@ -1,2 +1,4 @@
-tdm64-gcc-5.1.0-2.exe
-sqlite-database.db 
+*.db
+*.vscode
+auth
+
