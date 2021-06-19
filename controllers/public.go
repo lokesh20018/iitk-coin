@@ -9,7 +9,6 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	//"github.com/lokesh20018/iitk-coin/database"
 	"gorm.io/gorm"
 )
 
@@ -42,13 +41,10 @@ type BalanceResponse struct {
 
 // Transfer payload..
 type TransferPayload struct {
-	//ID            int64 `json:"id"`
-	//gorm.Model
 	FromAccountID string `json:"from_roll_no"`
 	ToAccountID   string `json:"to_roll_no"`
 	// must be positive
 	Amount int64 `json:"amount"`
-	//CreatedAt time.Time `json:"created_at"`
 }
 
 // creates a user in db
@@ -155,11 +151,9 @@ func Login(context *gin.Context) {
 
 //Account INIT
 func Account_init(context *gin.Context) {
-	//context2 := context
 
 	var payload InitPayload
 	var account models.Account
-	//var account2 models.Account
 
 	err := context.ShouldBindJSON(&payload)
 	if err != nil {
@@ -245,7 +239,6 @@ func Transfer(context *gin.Context) {
 	}
 
 	database.GlobalDBAcc.Transaction(func(tx *gorm.DB) error {
-		// do some database operations in the transaction (use 'tx' from this point, not 'db')
 		result := tx.Where("owner = ?", payload.FromAccountID).First(&FromAcc)
 
 		if result.Error == gorm.ErrRecordNotFound {
@@ -265,6 +258,7 @@ func Transfer(context *gin.Context) {
 		}
 		FromAcc.Balance -= payload.Amount
 		tx.Save(&FromAcc)
+		//time.Sleep(8 * time.Second)
 		result = tx.Where("owner = ?", payload.ToAccountID).First(&ToAcc)
 
 		if result.Error == gorm.ErrRecordNotFound {

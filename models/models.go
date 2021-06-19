@@ -5,7 +5,6 @@ package models
 import (
 	"iitk-coin/database"
 
-	//"github.com/lokesh20018/iitk-coin/database"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -21,12 +20,9 @@ type User struct {
 
 // account struct...
 type Account struct {
-	//ID      int64  `json:"id"`
 	gorm.Model
 	Owner   string `json:"roll_no" gorm:"unique"`
 	Balance int64  `json:"balance"`
-	//Currency  string    `json:"currency"`
-	//CreatedAt time.Time `json:"created_at"`
 }
 
 // CreateUserRecord creates a user record in the database
@@ -64,7 +60,6 @@ func (user *User) CheckPassword(providedPassword string) error {
 
 // account init
 func (account *Account) AccountInit() error {
-	//result := database.GlobalDBAcc.Where("Roll_no = ?", payload.Roll_no).First(&user)
 	result := database.GlobalDBAcc.Create(&account)
 	if result.Error != nil {
 		return result.Error

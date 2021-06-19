@@ -26,6 +26,5 @@ func InitDatabaseAcc() (err error) {
 	if err != nil {
 		return
 	}
-	//println("reached")
 	return
 }
