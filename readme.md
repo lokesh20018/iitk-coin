@@ -1,12 +1,13 @@
-## IITK-coin
+
 
 # SnT summer project
+## IITK-coin 
 
- <h2>The endpoins :-</h2> <br>
+ <h2>The endpoins :-</h2>
 <h3>For user auth</h3>                    
- POST   /login  <br>
+ POST  req at  "http://localhost:8080/signin" <br>
 <h4>Example req </h4>
-```
+``` 
 {
     "roll_no" : "190350" ,
     "password" : "pass"
