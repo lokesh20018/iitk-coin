@@ -8,14 +8,10 @@
  POST  req at  "http://localhost:8080/signin" 
 <h4>Example req </h4>
 { <br>
- <t> "roll_no" : "190350" , <br>
- <t> "password" : "pass" <br>
+<span> "roll_no" : "190350" , <br>
+ <span> "password" : "pass" <br>
 } <br> 
-```javascript
-    body =  {
-        "demo" : "demo"
-    }
- ```
+
  POST   /signup  
  GET    /secretpage/
  <h3>For currency transactions :-  </h3>                 
