@@ -5,15 +5,17 @@
 
  <h2>The endpoins :-</h2>
 <h3>For user auth</h3>                    
- POST  req at  "http://localhost:8080/signin" <br>
+ POST  req at  "http://localhost:8080/signin" 
 <h4>Example req </h4>
-``` javascript
-{
-    "roll_no" : "190350" ,
-    "password" : "pass"
-} 
- ``` 
-                
+{ <br>
+ <t> "roll_no" : "190350" , <br>
+ <t> "password" : "pass" <br>
+} <br> 
+    ```
+    {
+        hello : "dd" 
+    }
+    ```            
  POST   /signup  
  GET    /secretpage/
  <h3>For currency transactions :-  </h3>                 
@@ -21,12 +23,3 @@
  POST   /transfer                   
  GET    /balance                  
                   
-               
-example req SignIN/Login <br>
-{ <br>
- <t>   "roll_no" : "190350" , <br>
- <t> "password" : "pass" <br>
-} <br>
-
-<br>
-```
