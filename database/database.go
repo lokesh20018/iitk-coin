@@ -9,6 +9,7 @@ import (
 
 // GlobalDB a global db object will be used across different packages
 var GlobalDB *gorm.DB
+var GlobalDBAcc *gorm.DB
 
 // InitDatabase creates a sqlite db
 func InitDatabase() (err error) {
@@ -17,5 +18,14 @@ func InitDatabase() (err error) {
 		return
 	}
 
+	return
+}
+
+func InitDatabaseAcc() (err error) {
+	GlobalDBAcc, err = gorm.Open(sqlite.Open("acc.db"), &gorm.Config{})
+	if err != nil {
+		return
+	}
+	//println("reached")
 	return
 }
