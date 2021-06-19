@@ -40,6 +40,17 @@ type BalanceResponse struct {
 	Balance int64  `json:"balance`
 }
 
+// Transfer payload..
+type TransferPayload struct {
+	//ID            int64 `json:"id"`
+	//gorm.Model
+	FromAccountID string `json:"from_roll_no"`
+	ToAccountID   string `json:"to_roll_no"`
+	// must be positive
+	Amount int64 `json:"amount"`
+	//CreatedAt time.Time `json:"created_at"`
+}
+
 // creates a user in db
 func Signup(context *gin.Context) {
 	var user models.User
@@ -186,6 +197,7 @@ func Account_init(context *gin.Context) {
 	return
 }
 
+// read balance..
 func GetBalance(context *gin.Context) {
 	var payload BalancePayload
 	var account models.Account
@@ -214,4 +226,61 @@ func GetBalance(context *gin.Context) {
 
 	context.JSON(200, response)
 	return
+}
+
+// trasaction
+
+func Transfer(context *gin.Context) {
+	var payload TransferPayload
+	var FromAcc models.Account
+	var ToAcc models.Account
+
+	err := context.ShouldBindJSON(&payload)
+	if err != nil {
+		context.JSON(400, gin.H{
+			"msg": "invalid json",
+		})
+		context.Abort()
+		return
+	}
+
+	database.GlobalDBAcc.Transaction(func(tx *gorm.DB) error {
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		result := tx.Where("owner = ?", payload.FromAccountID).First(&FromAcc)
+
+		if result.Error == gorm.ErrRecordNotFound {
+			context.JSON(500, gin.H{
+				"msg": "error finding Sender account",
+			})
+			context.Abort()
+			return result.Error
+			//context.JSON(200, account)
+		}
+		if FromAcc.Balance < payload.Amount {
+			context.JSON(500, gin.H{
+				"msg": "account balance low",
+			})
+			context.Abort()
+			tx.Rollback()
+		}
+		FromAcc.Balance -= payload.Amount
+		tx.Save(&FromAcc)
+		result = tx.Where("owner = ?", payload.ToAccountID).First(&ToAcc)
+
+		if result.Error == gorm.ErrRecordNotFound {
+			context.JSON(500, gin.H{
+				"msg": "error finding reciever account",
+			})
+			context.Abort()
+			return result.Error
+			//context.JSON(200, account)
+		}
+
+		ToAcc.Balance += payload.Amount
+
+		tx.Save(&ToAcc)
+
+		// return nil will commit the whole transaction
+		return nil
+	})
 }

@@ -26,6 +26,7 @@ func setupRouter() *gin.Engine {
 	route.POST("/signup", controllers.Signup)
 	route.POST("/init", controllers.Account_init)
 	route.GET("/balance", controllers.GetBalance)
+	route.POST("/transfer", controllers.Transfer)
 	api_file := route.Group("/secretpage")
 	{
 		protected_route := api_file.Group("/").Use(middlewares.Authz())
