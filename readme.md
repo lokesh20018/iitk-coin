@@ -11,7 +11,7 @@
  <t> "roll_no" : "190350" , <br>
  <t> "password" : "pass" <br>
 } <br> 
-```bash
+```JSON
     {
         "demo" : "demo"
     }
