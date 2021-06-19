@@ -11,11 +11,11 @@
  <t> "roll_no" : "190350" , <br>
  <t> "password" : "pass" <br>
 } <br> 
-```JSON
-    {
+```javascript
+    body =  {
         "demo" : "demo"
     }
-```
+ ```
  POST   /signup  
  GET    /secretpage/
  <h3>For currency transactions :-  </h3>                 
