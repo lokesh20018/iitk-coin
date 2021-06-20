@@ -3,8 +3,8 @@
 package controllers
 
 import (
-	"iitk-coin/database"
-	"iitk-coin/models"
+	"github.com/lokesh20018/iitk-coin/database"
+	"github.com/lokesh20018/iitk-coin/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

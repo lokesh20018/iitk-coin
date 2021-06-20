@@ -3,8 +3,9 @@
 package middlewares
 
 import (
-	"iitk-coin/auth"
 	"strings"
+
+	"github.com/lokesh20018/iitk-coin/auth"
 
 	"github.com/gin-gonic/gin"
 )

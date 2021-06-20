@@ -3,14 +3,15 @@
 package main
 
 import (
-	"iitk-coin/controllers"
+	"github.com/lokesh20018/iitk-coin/controllers"
 
-	"iitk-coin/models"
 	"log"
 
-	"iitk-coin/middlewares"
+	"github.com/lokesh20018/iitk-coin/models"
 
-	"iitk-coin/database"
+	"github.com/lokesh20018/iitk-coin/middlewares"
+
+	"github.com/lokesh20018/iitk-coin/database"
 
 	"github.com/gin-gonic/gin"
 )

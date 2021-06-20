@@ -3,7 +3,7 @@
 package models
 
 import (
-	"iitk-coin/database"
+	"github.com/lokesh20018/iitk-coin/database"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

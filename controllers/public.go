@@ -3,10 +3,11 @@
 package controllers
 
 import (
-	"iitk-coin/auth"
-	"iitk-coin/database"
-	"iitk-coin/models"
 	"log"
+
+	"github.com/lokesh20018/iitk-coin/auth"
+	"github.com/lokesh20018/iitk-coin/database"
+	"github.com/lokesh20018/iitk-coin/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -179,13 +180,18 @@ func Account_init(context *gin.Context) {
 
 			return
 		}
+		context.JSON(200, gin.H{
+			"msg": "created user and added amount",
+		})
 		//context.JSON(200, account)
 
 	} else {
 		account.Balance += payload.Balance
 		database.GlobalDBAcc.Save(&account)
 		//context.JSON(200, account)
-
+		context.JSON(200, gin.H{
+			"msg": "added amount",
+		})
 	}
 
 	return
@@ -204,8 +210,9 @@ func GetBalance(context *gin.Context) {
 		context.Abort()
 		return
 	}
-
+	//time.Sleep(1 * time.Second)
 	result := database.GlobalDBAcc.Where("owner = ?", payload.Owner).First(&account)
+	//time.Sleep(1 * time.Second)
 
 	if result.Error == gorm.ErrRecordNotFound {
 		context.JSON(401, gin.H{
@@ -273,7 +280,9 @@ func Transfer(context *gin.Context) {
 		ToAcc.Balance += payload.Amount
 
 		tx.Save(&ToAcc)
-
+		context.JSON(200, gin.H{
+			"msg": "transfer successful ",
+		})
 		// return nil will commit the whole transaction
 		return nil
 	})
