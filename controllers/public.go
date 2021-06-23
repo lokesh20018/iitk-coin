@@ -155,7 +155,7 @@ func Account_init(context *gin.Context) {
 
 	var payload InitPayload
 	var account models.Account
-
+	var transaction models.Transaction
 	err := context.ShouldBindJSON(&payload)
 	if err != nil {
 		context.JSON(400, gin.H{
@@ -193,6 +193,10 @@ func Account_init(context *gin.Context) {
 			"msg": "added amount",
 		})
 	}
+	transaction.Amount = payload.Balance
+	transaction.FromAccountID = "Admin_reward"
+	transaction.ToAccountID = payload.Owner
+	transaction.TransactionRecord()
 
 	return
 }
@@ -210,7 +214,7 @@ func GetBalance(context *gin.Context) {
 		context.Abort()
 		return
 	}
-	//time.Sleep(1 * time.Second)
+	//time.Sleep(5 * time.Second)
 	result := database.GlobalDBAcc.Where("owner = ?", payload.Owner).First(&account)
 	//time.Sleep(1 * time.Second)
 
@@ -235,7 +239,7 @@ func Transfer(context *gin.Context) {
 	var payload TransferPayload
 	var FromAcc models.Account
 	var ToAcc models.Account
-
+	var transaction models.Transaction
 	err := context.ShouldBindJSON(&payload)
 	if err != nil {
 		context.JSON(400, gin.H{
@@ -284,6 +288,10 @@ func Transfer(context *gin.Context) {
 			"msg": "transfer successful ",
 		})
 		// return nil will commit the whole transaction
+		transaction.Amount = payload.Amount
+		transaction.FromAccountID = payload.FromAccountID
+		transaction.ToAccountID = payload.ToAccountID
+		transaction.TransactionRecord()
 		return nil
 	})
 }

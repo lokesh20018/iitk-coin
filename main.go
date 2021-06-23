@@ -53,6 +53,12 @@ func main() {
 	}
 	database.GlobalDBAcc.AutoMigrate(&models.Account{})
 
+	err3 := database.InitDatabaseTrans()
+	if err3 != nil {
+		log.Fatalln("could not create Transfer database.... ", err3)
+	}
+	database.GlobalDBTrans.AutoMigrate(&models.Transaction{})
+
 	route := setupRouter()
 	route.Run(":8080")
 }

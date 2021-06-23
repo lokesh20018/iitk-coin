@@ -25,6 +25,14 @@ type Account struct {
 	Balance int64  `json:"balance"`
 }
 
+// to record the entry...
+type Transaction struct {
+	gorm.Model
+	FromAccountID string `json:"from_roll_no"`
+	ToAccountID   string `json:"to_roll_no"`
+	Amount        int64  `json:"amount"`
+}
+
 // CreateUserRecord creates a user record in the database
 func (user *User) CreateUserRecord() error {
 	//time.Sleep(8 * time.Second)
@@ -61,6 +69,14 @@ func (user *User) CheckPassword(providedPassword string) error {
 // account init
 func (account *Account) AccountInit() error {
 	result := database.GlobalDBAcc.Create(&account)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (transaction *Transaction) TransactionRecord() error {
+	result := database.GlobalDBTrans.Create(&transaction)
 	if result.Error != nil {
 		return result.Error
 	}
