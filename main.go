@@ -26,15 +26,17 @@ func setupRouter() *gin.Engine {
 	route.POST("/login", controllers.Login)
 	route.POST("/signup", controllers.Signup)
 	route.POST("/init", controllers.Account_init)
-	route.GET("/balance", controllers.GetBalance)
-	route.POST("/transfer", controllers.Transfer)
-	api_file := route.Group("/secretpage")
-	{
-		protected_route := api_file.Group("/").Use(middlewares.Authz())
-		{
-			protected_route.GET("/", controllers.Profile)
-		}
-	}
+	route.GET("/balance", middlewares.Authz(), controllers.GetBalance)
+	route.POST("/transfer", middlewares.Authz(), controllers.Transfer)
+	route.GET("/secretpage", middlewares.Authz(), controllers.Profile)
+
+	// api_file := route.Group("/secretpage")
+	// {
+	// 	protected_route := api_file.Group("/").Use(middlewares.Authz())
+	// 	{
+	// 		protected_route.GET("/", controllers.Profile)
+	// 	}
+	// }
 
 	return route
 }

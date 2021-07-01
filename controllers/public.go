@@ -88,6 +88,19 @@ func Signup(context *gin.Context) {
 		return
 	}
 
+	var account models.Account
+	account.Owner = user.Roll_no
+	account.Balance = 0
+	err = account.AccountInit()
+	if err != nil {
+		log.Println(err)
+		context.JSON(500, gin.H{
+			"msg": "error creating user account",
+		})
+		context.Abort()
+
+		return
+	}
 	context.JSON(200, user)
 }
 
@@ -152,7 +165,6 @@ func Login(context *gin.Context) {
 
 //Account INIT
 func Account_init(context *gin.Context) {
-
 	var payload InitPayload
 	var account models.Account
 	var transaction models.Transaction
@@ -168,23 +180,9 @@ func Account_init(context *gin.Context) {
 	result := database.GlobalDBAcc.Where("owner = ?", payload.Owner).First(&account)
 
 	if result.Error == gorm.ErrRecordNotFound {
-		account.Owner = payload.Owner
-		account.Balance = payload.Balance
-		err = account.AccountInit()
-		if err != nil {
-			log.Println(err)
-			context.JSON(500, gin.H{
-				"msg": "error creating user",
-			})
-			context.Abort()
-
-			return
-		}
-		context.JSON(200, gin.H{
-			"msg": "created user and added amount",
+		context.JSON(500, gin.H{
+			"msg": "Account not found",
 		})
-		//context.JSON(200, account)
-
 	} else {
 		account.Balance += payload.Balance
 		database.GlobalDBAcc.Save(&account)
@@ -203,6 +201,10 @@ func Account_init(context *gin.Context) {
 
 // read balance..
 func GetBalance(context *gin.Context) {
+	Roll_no, _ := context.Get("roll_no")
+	// context.JSON(401, gin.H{
+	// 	"msg": Roll_no,
+	// })
 	var payload BalancePayload
 	var account models.Account
 
@@ -210,6 +212,13 @@ func GetBalance(context *gin.Context) {
 	if err != nil {
 		context.JSON(400, gin.H{
 			"msg": "invalid json",
+		})
+		context.Abort()
+		return
+	}
+	if Roll_no != payload.Owner {
+		context.JSON(401, gin.H{
+			"msg": "not authorised to view balance",
 		})
 		context.Abort()
 		return
@@ -236,10 +245,12 @@ func GetBalance(context *gin.Context) {
 // trasaction
 
 func Transfer(context *gin.Context) {
+	Roll_no, _ := context.Get("roll_no")
 	var payload TransferPayload
 	var FromAcc models.Account
 	var ToAcc models.Account
 	var transaction models.Transaction
+
 	err := context.ShouldBindJSON(&payload)
 	if err != nil {
 		context.JSON(400, gin.H{
@@ -249,6 +260,13 @@ func Transfer(context *gin.Context) {
 		return
 	}
 
+	if Roll_no != payload.FromAccountID {
+		context.JSON(401, gin.H{
+			"msg": "not authorised to transfer",
+		})
+		context.Abort()
+		return
+	}
 	database.GlobalDBAcc.Transaction(func(tx *gorm.DB) error {
 		result := tx.Where("owner = ?", payload.FromAccountID).First(&FromAcc)
 
@@ -261,11 +279,13 @@ func Transfer(context *gin.Context) {
 			//context.JSON(200, account)
 		}
 		if FromAcc.Balance < payload.Amount {
+
 			context.JSON(500, gin.H{
 				"msg": "account balance low",
 			})
 			context.Abort()
 			tx.Rollback()
+			return nil
 		}
 		FromAcc.Balance -= payload.Amount
 		tx.Save(&FromAcc)
@@ -283,7 +303,6 @@ func Transfer(context *gin.Context) {
 
 		ToAcc.Balance += payload.Amount
 
-		tx.Save(&ToAcc)
 		context.JSON(200, gin.H{
 			"msg": "transfer successful ",
 		})
@@ -292,6 +311,7 @@ func Transfer(context *gin.Context) {
 		transaction.FromAccountID = payload.FromAccountID
 		transaction.ToAccountID = payload.ToAccountID
 		transaction.TransactionRecord()
+		tx.Save(&ToAcc)
 		return nil
 	})
 }
