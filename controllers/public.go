@@ -176,13 +176,25 @@ func Account_init(context *gin.Context) {
 		context.Abort()
 		return
 	}
-
+	if payload.Balance > 1000 {
+		context.JSON(400, gin.H{
+			"msg": "Upper limit to one time transaction is 1000 coins",
+		})
+		context.Abort()
+		return
+	}
 	result := database.GlobalDBAcc.Where("owner = ?", payload.Owner).First(&account)
 
 	if result.Error == gorm.ErrRecordNotFound {
 		context.JSON(500, gin.H{
 			"msg": "Account not found",
 		})
+	} else if account.Balance+payload.Balance > 100000 {
+		context.JSON(400, gin.H{
+			"msg": "Account upper limit reached ",
+		})
+		context.Abort()
+		return
 	} else {
 		account.Balance += payload.Balance
 		database.GlobalDBAcc.Save(&account)
@@ -259,7 +271,13 @@ func Transfer(context *gin.Context) {
 		context.Abort()
 		return
 	}
-
+	if payload.Amount > 1000 {
+		context.JSON(400, gin.H{
+			"msg": "Upper limit to one time transaction is 1000 coins",
+		})
+		context.Abort()
+		return
+	}
 	if Roll_no != payload.FromAccountID {
 		context.JSON(401, gin.H{
 			"msg": "not authorised to transfer",
@@ -300,7 +318,14 @@ func Transfer(context *gin.Context) {
 			return result.Error
 			//context.JSON(200, account)
 		}
-
+		if ToAcc.Balance+payload.Amount > 100000 {
+			context.JSON(400, gin.H{
+				"msg": "Account upper limit reached",
+			})
+			context.Abort()
+			tx.Rollback()
+			return nil
+		}
 		ToAcc.Balance += payload.Amount
 
 		context.JSON(200, gin.H{
