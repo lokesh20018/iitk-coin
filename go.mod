@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/assert v1.2.1 // indirect
 	github.com/go-playground/assert/v2 v2.0.1
+	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.5.1

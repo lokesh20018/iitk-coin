@@ -176,9 +176,9 @@ func Account_init(context *gin.Context) {
 		context.Abort()
 		return
 	}
-	if payload.Balance > 1000 {
+	if payload.Balance > 30000 {
 		context.JSON(400, gin.H{
-			"msg": "Upper limit to one time transaction is 1000 coins",
+			"msg": "Upper limit to one time transaction is 30000 coins",
 		})
 		context.Abort()
 		return
@@ -189,7 +189,7 @@ func Account_init(context *gin.Context) {
 		context.JSON(500, gin.H{
 			"msg": "Account not found",
 		})
-	} else if account.Balance+payload.Balance > 100000 {
+	} else if account.Balance+payload.Balance > 1000000 {
 		context.JSON(400, gin.H{
 			"msg": "Account upper limit reached ",
 		})
@@ -271,13 +271,7 @@ func Transfer(context *gin.Context) {
 		context.Abort()
 		return
 	}
-	if payload.Amount > 1000 {
-		context.JSON(400, gin.H{
-			"msg": "Upper limit to one time transaction is 1000 coins",
-		})
-		context.Abort()
-		return
-	}
+
 	if Roll_no != payload.FromAccountID {
 		context.JSON(401, gin.H{
 			"msg": "not authorised to transfer",
@@ -285,6 +279,22 @@ func Transfer(context *gin.Context) {
 		context.Abort()
 		return
 	}
+
+	if payload.Amount > 10000 {
+		context.JSON(400, gin.H{
+			"msg": "Upper limit to one time transaction is 10000 coins",
+		})
+		context.Abort()
+		return
+	}
+	if payload.Amount < 100 {
+		context.JSON(400, gin.H{
+			"msg": "lower limit of transaction is 100 coins",
+		})
+		context.Abort()
+		return
+	}
+
 	database.GlobalDBAcc.Transaction(func(tx *gorm.DB) error {
 		result := tx.Where("owner = ?", payload.FromAccountID).First(&FromAcc)
 
@@ -318,7 +328,13 @@ func Transfer(context *gin.Context) {
 			return result.Error
 			//context.JSON(200, account)
 		}
-		if ToAcc.Balance+payload.Amount > 100000 {
+		txn_charge := 10
+		if payload.Amount > 500 {
+			txn_charge = (int(payload.Amount) / 100) * 2
+		}
+		payload.Amount -= int64(txn_charge)
+
+		if ToAcc.Balance+payload.Amount > 1000000 {
 			context.JSON(400, gin.H{
 				"msg": "Account upper limit reached",
 			})
@@ -329,7 +345,10 @@ func Transfer(context *gin.Context) {
 		ToAcc.Balance += payload.Amount
 
 		context.JSON(200, gin.H{
-			"msg": "transfer successful ",
+			"msg":              "transfer successful ",
+			"Amount initiated": payload.Amount + int64(txn_charge),
+			"txn charge":       txn_charge,
+			"Amount recieved":  payload.Amount,
 		})
 		// return nil will commit the whole transaction
 		transaction.Amount = payload.Amount

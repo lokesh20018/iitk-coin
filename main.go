@@ -25,7 +25,7 @@ func setupRouter() *gin.Engine {
 
 	route.POST("/login", controllers.Login)
 	route.POST("/signup", controllers.Signup)
-	route.POST("/init", controllers.Account_init)
+	route.POST("/init", middlewares.Authz_Admin(), controllers.Account_init)
 	route.GET("/balance", middlewares.Authz(), controllers.GetBalance)
 	route.POST("/transfer", middlewares.Authz(), controllers.Transfer)
 	route.GET("/secretpage", middlewares.Authz(), controllers.Profile)
