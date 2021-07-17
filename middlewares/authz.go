@@ -22,9 +22,7 @@ func Authz() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if clientToken == "admin007" {
-			c.Next()
-		}
+
 		extractedToken := clientToken
 
 		clientToken = strings.TrimSpace(extractedToken)
@@ -67,7 +65,6 @@ func Authz_Admin() gin.HandlerFunc {
 		if clientToken == pass {
 			c.Next()
 		} else {
-
 			c.JSON(403, "invaid admin credentials")
 			c.Abort()
 			return
